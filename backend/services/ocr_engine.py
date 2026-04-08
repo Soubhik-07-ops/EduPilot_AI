@@ -51,6 +51,15 @@ def _candidate_vision_models() -> list[str]:
     if configured:
         candidates.append(configured)
 
+    # Additional common multimodal free candidates.
+    defaults = [
+        "meta-llama/llama-3.2-11b-vision-instruct:free",
+        "google/gemma-3-27b-it:free",
+    ]
+    for model in defaults:
+        if model not in candidates:
+            candidates.append(model)
+
     # Router-level fallback that auto-selects available free models supporting image input.
     if "openrouter/free" not in candidates:
         candidates.append("openrouter/free")
@@ -77,6 +86,11 @@ def _extract_with_openrouter_vision(file_bytes: bytes) -> str:
         payload = {
             "model": model,
             "temperature": 0,
+            "provider": {
+                "ignore": ["nvidia"],
+                "require_parameters": True,
+                "allow_fallbacks": True,
+            },
             "messages": [
                 {
                     "role": "user",
