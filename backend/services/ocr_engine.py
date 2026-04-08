@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import io
 import os
+import re
 from imghdr import what as detect_image_type
 from pathlib import Path
 
@@ -16,6 +17,15 @@ load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 OPENROUTER_VISION_MODEL = os.getenv("OPENROUTER_VISION_MODEL", "qwen/qwen2.5-vl-72b-instruct:free")
 REQUEST_TIMEOUT_SECONDS = 45
+
+
+def _sanitize_error_text(text: str) -> str:
+    redacted = text
+    api_key = os.getenv("OPENROUTER_API_KEY", "")
+    if api_key:
+        redacted = redacted.replace(api_key, "[REDACTED_API_KEY]")
+    redacted = re.sub(r"Bearer\s+[A-Za-z0-9._\-]+", "Bearer [REDACTED_TOKEN]", redacted, flags=re.IGNORECASE)
+    return redacted
 
 
 def _detect_mime_type(file_bytes: bytes) -> str:
@@ -72,15 +82,27 @@ def _extract_with_openrouter_vision(file_bytes: bytes) -> str:
         ],
     }
 
-    response = requests.post(
-        OPENROUTER_URL,
-        headers=headers,
-        json=payload,
-        timeout=REQUEST_TIMEOUT_SECONDS,
-    )
-    response.raise_for_status()
+    try:
+        response = requests.post(
+            OPENROUTER_URL,
+            headers=headers,
+            json=payload,
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
+        content = response.json()["choices"][0]["message"]["content"]
+    except requests.HTTPError as exc:
+        status_code = exc.response.status_code if exc.response is not None else "unknown"
+        body = exc.response.text if exc.response is not None else str(exc)
+        body = _sanitize_error_text(body)[:260]
+        raise ValueError(f"OpenRouter vision HTTP {status_code}: {body}") from exc
+    except requests.RequestException as exc:
+        safe_message = _sanitize_error_text(str(exc))[:260]
+        raise ValueError(f"OpenRouter vision request failed: {safe_message}") from exc
+    except Exception as exc:
+        safe_message = _sanitize_error_text(str(exc))[:260]
+        raise ValueError(f"OpenRouter vision response parse failed: {safe_message}") from exc
 
-    content = response.json()["choices"][0]["message"]["content"]
     text = content.strip() if isinstance(content, str) else ""
 
     if not text:
@@ -101,7 +123,7 @@ def extract_text_from_image_bytes(file_bytes: bytes) -> str:
         except Exception as vision_exc:
             raise ValueError(
                 "pytesseract is not installed and OpenRouter vision fallback failed. "
-                "Install pytesseract or configure OPENROUTER_API_KEY."
+                f"Reason: {vision_exc}"
             ) from vision_exc
 
     tesseract_cmd = os.getenv("TESSERACT_CMD", r"C:\Program Files\Tesseract-OCR\tesseract.exe")
@@ -123,7 +145,8 @@ def extract_text_from_image_bytes(file_bytes: bytes) -> str:
         except Exception as vision_exc:
             raise ValueError(
                 "Tesseract OCR executable was not found, and OpenRouter vision fallback failed. "
-                "Install Tesseract and set TESSERACT_CMD, or configure OPENROUTER_API_KEY with a vision model."
+                "Install Tesseract and set TESSERACT_CMD, or configure OPENROUTER_API_KEY with a vision model. "
+                f"Reason: {vision_exc}"
             ) from vision_exc
     except Exception:
         # OCR engine exceptions can still happen even with binary present.
@@ -133,7 +156,7 @@ def extract_text_from_image_bytes(file_bytes: bytes) -> str:
             except Exception as vision_exc:
                 raise ValueError(
                     "Image OCR failed and OpenRouter vision fallback failed. "
-                    "Use a PDF/TXT/CSV file, or configure OCR dependencies."
+                    f"Use a PDF/TXT/CSV file, or configure OCR dependencies. Reason: {vision_exc}"
                 ) from vision_exc
         raise
 
