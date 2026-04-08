@@ -56,7 +56,7 @@ export default function Navbar() {
 
   return (
     <aside className={styles.sidebar}>
-      <Link href="/dashboard" className={styles.brand}>
+      <Link href="/dashboard" className={styles.brand} prefetch={false}>
         <span className={styles.brandIcon} aria-hidden="true">
           E
         </span>
@@ -68,7 +68,7 @@ export default function Navbar() {
           const linkClassName = isActive ? `${styles.link} ${styles.linkActive}` : styles.link;
 
           return (
-            <Link key={item.href} href={item.href} className={linkClassName}>
+            <Link key={item.href} href={item.href} className={linkClassName} prefetch={false}>
               <span className={styles.linkIcon}>{item.icon}</span>
               {item.label}
             </Link>

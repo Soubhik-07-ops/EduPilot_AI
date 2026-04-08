@@ -20,7 +20,23 @@ const REQUEST_TIMEOUT_MS = 30_000;
 function resolveApiBaseUrl(): string {
   const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
   if (configured) {
-    return configured.replace(/\/+$/, "");
+    const normalized = configured.replace(/\/+$/, "");
+
+    // Prevent broken production deploys caused by localhost API URL in Vercel env.
+    if (process.env.NODE_ENV === "production") {
+      try {
+        const parsed = new URL(normalized);
+        const isLocalHost = parsed.hostname === "127.0.0.1" || parsed.hostname === "localhost";
+        if (!isLocalHost) {
+          return normalized;
+        }
+      } catch {
+        // If URL parsing fails, keep current behavior and use configured value.
+        return normalized;
+      }
+    } else {
+      return normalized;
+    }
   }
 
   // Local dev backend default.
