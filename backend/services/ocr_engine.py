@@ -45,6 +45,19 @@ def _detect_mime_type(file_bytes: bytes) -> str:
     return "image/png"
 
 
+def _candidate_vision_models() -> list[str]:
+    configured = os.getenv("OPENROUTER_VISION_MODEL", OPENROUTER_VISION_MODEL).strip()
+    candidates: list[str] = []
+    if configured:
+        candidates.append(configured)
+
+    # Router-level fallback that auto-selects available free models supporting image input.
+    if "openrouter/free" not in candidates:
+        candidates.append("openrouter/free")
+
+    return candidates
+
+
 def _extract_with_openrouter_vision(file_bytes: bytes) -> str:
     api_key = os.getenv("OPENROUTER_API_KEY", "").strip()
     if not api_key:
@@ -58,57 +71,59 @@ def _extract_with_openrouter_vision(file_bytes: bytes) -> str:
         "Content-Type": "application/json",
     }
 
-    payload = {
-        "model": OPENROUTER_VISION_MODEL,
-        "temperature": 0,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": (
-                            "Extract all readable text from this image. "
-                            "Return only plain text with line breaks. "
-                            "Do not add explanations."
-                        ),
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:{mime_type};base64,{image_b64}"},
-                    },
-                ],
-            }
-        ],
-    }
+    last_error = "unknown error"
 
-    try:
-        response = requests.post(
-            OPENROUTER_URL,
-            headers=headers,
-            json=payload,
-            timeout=REQUEST_TIMEOUT_SECONDS,
-        )
-        response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"]
-    except requests.HTTPError as exc:
-        status_code = exc.response.status_code if exc.response is not None else "unknown"
-        body = exc.response.text if exc.response is not None else str(exc)
-        body = _sanitize_error_text(body)[:260]
-        raise ValueError(f"OpenRouter vision HTTP {status_code}: {body}") from exc
-    except requests.RequestException as exc:
-        safe_message = _sanitize_error_text(str(exc))[:260]
-        raise ValueError(f"OpenRouter vision request failed: {safe_message}") from exc
-    except Exception as exc:
-        safe_message = _sanitize_error_text(str(exc))[:260]
-        raise ValueError(f"OpenRouter vision response parse failed: {safe_message}") from exc
+    for model in _candidate_vision_models():
+        payload = {
+            "model": model,
+            "temperature": 0,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": (
+                                "Extract all readable text from this image. "
+                                "Return only plain text with line breaks. "
+                                "Do not add explanations."
+                            ),
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:{mime_type};base64,{image_b64}"},
+                        },
+                    ],
+                }
+            ],
+        }
 
-    text = content.strip() if isinstance(content, str) else ""
+        try:
+            response = requests.post(
+                OPENROUTER_URL,
+                headers=headers,
+                json=payload,
+                timeout=REQUEST_TIMEOUT_SECONDS,
+            )
+            response.raise_for_status()
+            content = response.json()["choices"][0]["message"]["content"]
+            text = content.strip() if isinstance(content, str) else ""
+            if text:
+                return text
+            last_error = f"Model {model} returned empty text."
+        except requests.HTTPError as exc:
+            status_code = exc.response.status_code if exc.response is not None else "unknown"
+            body = exc.response.text if exc.response is not None else str(exc)
+            body = _sanitize_error_text(body)[:260]
+            last_error = f"Model {model} HTTP {status_code}: {body}"
+        except requests.RequestException as exc:
+            safe_message = _sanitize_error_text(str(exc))[:260]
+            last_error = f"Model {model} request failed: {safe_message}"
+        except Exception as exc:
+            safe_message = _sanitize_error_text(str(exc))[:260]
+            last_error = f"Model {model} response parse failed: {safe_message}"
 
-    if not text:
-        raise ValueError("No readable text found in image.")
-
-    return text
+    raise ValueError(f"OpenRouter vision failed for all candidate models. Last error: {last_error}")
 
 
 def extract_text_from_image_bytes(file_bytes: bytes) -> str:
