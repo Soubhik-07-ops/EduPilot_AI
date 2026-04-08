@@ -1,0 +1,336 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.4rem;
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.heading {
+  margin: 0;
+  font-size: clamp(1.6rem, 2.5vw, 2rem);
+  letter-spacing: -0.01em;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.metricCard {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1rem 0.9rem;
+  box-shadow: var(--shadow-sm);
+  animation: fadeUp var(--transition-slow) both;
+  animation-delay: var(--delay, 0ms);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.metricCardtotal {
+  border-left-color: var(--accent);
+}
+
+.metricCardavg {
+  border-left-color: var(--success);
+}
+
+.metricCardweak {
+  border-left-color: var(--warning);
+}
+
+.metricCardsuccess {
+  border-left-color: var(--accent);
+}
+
+.metricIcon {
+  position: absolute;
+  right: 0.85rem;
+  top: 0.85rem;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metricIcon svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
+.metricTitle {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+}
+
+.metricValue {
+  margin: 0.35rem 0 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.metricTrend {
+  margin: 0.25rem 0 0;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.recentCard {
+  margin-top: 1.4rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.viewAllLink {
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  border-radius: var(--radius-pill);
+  padding: 0.38rem 0.78rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.viewAllLink:hover {
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+}
+
+.evaluationList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.evaluationItem {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.72rem 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  background: var(--surface);
+  animation: fadeUp var(--transition-slow) both;
+  animation-delay: var(--delay, 0ms);
+  transition: transform var(--transition-base), background var(--transition-base);
+}
+
+.evaluationItem:hover {
+  transform: translateY(-2px);
+  background: var(--surface-raised);
+}
+
+.itemDetails {
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
+}
+
+.itemTextWrap {
+  display: grid;
+}
+
+.avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.84rem;
+}
+
+.studentName {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.assignment {
+  color: var(--text-primary);
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.88rem;
+}
+
+.scoreBadge {
+  border-radius: var(--radius-pill);
+  padding: 0.36rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.scoreGreen {
+  color: var(--success-text);
+  background: var(--success-bg);
+}
+
+.scoreOrange {
+  color: var(--warning-text);
+  background: var(--warning-bg);
+}
+
+.scoreRed {
+  color: var(--danger-text);
+  background: var(--danger-bg);
+}
+
+.metricSkeleton,
+.listSkeletonRow {
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--surface-raised), var(--surface), var(--surface-raised));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+  border: 1px solid var(--border);
+}
+
+.metricSkeleton {
+  height: 124px;
+}
+
+.listSkeleton {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+}
+
+.listSkeletonRow {
+  height: 52px;
+}
+
+.errorCard {
+  border-left: 4px solid var(--danger);
+  border-radius: var(--radius-md);
+  background: var(--danger-bg);
+  border: 1px solid color-mix(in srgb, var(--danger) 28%, var(--surface));
+  padding: 0.9rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.errorTitle {
+  margin: 0;
+  font-weight: 700;
+  color: var(--danger-text);
+}
+
+.errorMessage {
+  margin: 0.35rem 0 0.8rem;
+  color: var(--danger-text);
+}
+
+.retryButton {
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--danger);
+  color: var(--surface);
+  padding: 0.45rem 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.emptyState {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 0.8rem;
+  display: block;
+  color: var(--text-muted);
+}
+
+.emptyIcon rect,
+.emptyIcon path {
+  stroke: currentColor;
+  stroke-width: 4;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.emptyText {
+  margin: 0.35rem 0 1rem;
+  color: var(--text-secondary);
+}
+
+.emptyCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--surface);
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  transition: background var(--transition-base), transform var(--transition-base);
+}
+
+.emptyCta:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 0.2rem;
+  }
+
+  .metricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .evaluationItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

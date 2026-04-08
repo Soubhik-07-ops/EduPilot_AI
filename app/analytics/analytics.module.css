@@ -1,0 +1,265 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.4rem;
+}
+
+.heading {
+  margin: 0 0 0.8rem;
+  font-size: clamp(1.6rem, 2.6vw, 2rem);
+}
+
+.summaryChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.summaryChip {
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-xs);
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.chartGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chartCard {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.chartCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.cardTitle {
+  margin: 0 0 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.chartArea {
+  width: 100%;
+  height: 300px;
+}
+
+.legendList {
+  list-style: none;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  padding: 0.28rem 0.55rem;
+}
+
+.legendDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.legendCount {
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.1rem 0.38rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.topList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.topListItem {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.7rem;
+  background: var(--surface-raised);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.rankBadge {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.rankGold {
+  background: var(--rank-gold-bg);
+  border-color: var(--rank-gold-border);
+  color: var(--rank-gold-text);
+}
+
+.rankSilver {
+  background: var(--rank-silver-bg);
+  border-color: var(--rank-silver-border);
+}
+
+.rankBronze {
+  background: var(--rank-bronze-bg);
+  border-color: var(--rank-bronze-border);
+  color: var(--rank-bronze-text);
+}
+
+.topicName {
+  font-weight: 500;
+}
+
+.topicCount {
+  margin-left: auto;
+  border-radius: var(--radius-pill);
+  padding: 0.2rem 0.55rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--accent-text);
+  background: var(--accent-subtle);
+}
+
+.skeletonWrap {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.skeletonCard {
+  height: 140px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: linear-gradient(90deg, var(--surface-raised), var(--surface), var(--surface-raised));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.errorCard {
+  border-left: 4px solid var(--danger);
+  border-radius: var(--radius-md);
+  background: var(--danger-bg);
+  border: 1px solid color-mix(in srgb, var(--danger) 28%, var(--surface));
+  padding: 0.9rem 1rem;
+}
+
+.errorTitle {
+  margin: 0;
+  font-weight: 700;
+  color: var(--danger-text);
+}
+
+.errorMessage {
+  margin: 0.35rem 0 0.8rem;
+  color: var(--danger-text);
+}
+
+.retryButton {
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--danger);
+  color: var(--surface);
+  padding: 0.45rem 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.emptyState {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background: var(--surface);
+}
+
+.emptyIcon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 0.8rem;
+  display: block;
+  color: var(--text-muted);
+}
+
+.emptyIcon rect,
+.emptyIcon path {
+  stroke: currentColor;
+  stroke-width: 4;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.emptyText {
+  margin: 0.35rem 0 1rem;
+  color: var(--text-secondary);
+}
+
+.emptyCta {
+  display: inline-flex;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--surface);
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  transition: background var(--transition-base), transform var(--transition-base);
+}
+
+.emptyCta:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+  .chartGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 0.2rem;
+  }
+
+  .chartArea {
+    height: 250px;
+  }
+}
