@@ -65,6 +65,11 @@ async def upload_document(file: UploadFile = File(...)) -> UploadResponse:
 
     except HTTPException:
         raise
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(exc),
+        ) from exc
     except Exception as exc:
         logger.exception("Failed to process uploaded file")
         raise HTTPException(

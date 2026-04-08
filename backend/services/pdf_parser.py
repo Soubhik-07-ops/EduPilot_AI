@@ -2,12 +2,18 @@ from __future__ import annotations
 
 import io
 
-import pdfplumber
-
 
 def extract_text_from_pdf_bytes(file_bytes: bytes) -> str:
     if not file_bytes:
         raise ValueError("PDF content is empty")
+
+    try:
+        import pdfplumber
+    except ModuleNotFoundError as exc:
+        raise ValueError(
+            "pdfplumber is not installed in the current Python environment. "
+            "Install it with: pip install pdfplumber"
+        ) from exc
 
     extracted_pages: list[str] = []
 
