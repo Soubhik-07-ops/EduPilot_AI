@@ -16,7 +16,28 @@ export class ApiError extends Error {
 }
 
 const REQUEST_TIMEOUT_MS = 30_000;
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000").replace(/\/+$/, "");
+
+function resolveApiBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (configured) {
+    return configured.replace(/\/+$/, "");
+  }
+
+  // Local dev backend default.
+  if (process.env.NODE_ENV !== "production") {
+    return "http://127.0.0.1:8000";
+  }
+
+  // Production fallback for Vercel multi-service routePrefix.
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}/_/backend`;
+  }
+
+  // Server-side production fallback.
+  return "/_/backend";
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 function parseApiErrorMessage(payload: unknown, fallback: string): string {
   if (typeof payload === "string" && payload.trim()) {
